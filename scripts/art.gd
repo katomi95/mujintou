@@ -435,7 +435,7 @@ static func campfire(c: CanvasItem, pos: Vector2, sz: float, t: float) -> void:
 		c.draw_circle(Vector2(x, y), 2.5 + s * 0.3, Color(1.0, 0.75, 0.3, 1.0 - ph))
 
 
-static func palm(c: CanvasItem, base: Vector2, hgt: float, lean: float, t: float) -> void:
+static func palm(c: CanvasItem, base: Vector2, hgt: float, lean: float, t: float, leaves: float = 1.0) -> void:
 	var top := base + Vector2(lean * hgt, -hgt)
 	var ctrl := base + Vector2(lean * hgt * 0.1, -hgt * 0.6)
 	var prev := base
@@ -447,7 +447,7 @@ static func palm(c: CanvasItem, base: Vector2, hgt: float, lean: float, t: float
 			c.draw_line(q + Vector2(-8, 0), q + Vector2(8, 2), Color("6d4727"), 2.0)
 		prev = q
 	var cols := [Color("3f9a3f"), Color("52b04a")]
-	for i in 8:
+	for i in int(ceil(8.0 * leaves)):
 		var a := deg_to_rad(-175.0 + 22.0 * i) + sin(t * 1.4 + i) * 0.04
 		var dir := Vector2(cos(a), sin(a))
 		var len := 105.0 + (i % 2) * 14.0
@@ -457,8 +457,9 @@ static func palm(c: CanvasItem, base: Vector2, hgt: float, lean: float, t: float
 		var mid := top + dir * len * 0.5 + Vector2(0, droop * 0.25)
 		c.draw_colored_polygon(PackedVector2Array([top, mid + perp * 15.0, tip, mid - perp * 13.0]), cols[i % 2])
 		c.draw_line(top, tip, Color("2f7a32"), 2.0)
-	c.draw_circle(top + Vector2(-8, 8), 9.0, Color("6a4526"))
-	c.draw_circle(top + Vector2(9, 10), 9.0, Color("5a3a1f"))
+	if leaves > 0.5:
+		c.draw_circle(top + Vector2(-8, 8), 9.0, Color("6a4526"))
+		c.draw_circle(top + Vector2(9, 10), 9.0, Color("5a3a1f"))
 
 
 static func tent(c: CanvasItem, base: Vector2, prog: float, sc: float, lit: float, patch: float = 0.0) -> void:

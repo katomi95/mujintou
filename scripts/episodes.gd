@@ -224,15 +224,16 @@ func ep_lighter() -> void:
 	S.h.expr = "burn"
 	_arms(8.0, 8.0)
 	await S.say("火を、絶やしてはいけない。", 2.0)
-	await _trip(0.7)
+	await S.say("薪は……そこのヤシから取ればいい。", 2.2)
+	await _trip(0.7, 0)
 	await S.say("ごはん？ あとだ。薪だ。", 1.7)
-	await _trip(0.7)
+	await _trip(0.7, 0)
 	await S.jump("三日後", func(): S.v.fire_t = 2.2; S.v.benches = true; S.time_now("dusk"))
-	await _trip(0.6)
+	await _trip(0.6, 1)
 	await S.say("火は、消えていない。", 1.5)
 	await S.jump("一ヶ月後", func(): S.v.fire_t = 3.8; S.time_now("night"))
-	await _trip(0.8, 0.6)
-	await S.jump("一年後", func(): S.v.fire_t = 7.0; S.h.s = 0.8; S.h.p = Vector2(560, 535))
+	await _trip(0.8, 1)
+	await S.jump("一年後", func(): S.v.fire_t = 7.0; S.v["lv_985"] = 0.0; S.v["lv_1140"] = 0.0; S.h.s = 0.8; S.h.p = Vector2(560, 535))
 	await S.wait(1.4)
 	S.h.expr = "smile"
 	_arms(8.0, 165.0)
@@ -240,13 +241,24 @@ func ep_lighter() -> void:
 	await _end(1.2)
 
 
-func _trip(add: float, dur: float = 0.8) -> void:
+const TREES := [Vector3(150, 180, 525), Vector3(985, 1015, 480)]
+
+
+func _trip(add: float, tree: int, dur: float = 0.9) -> void:
+	var tr: Vector3 = TREES[tree]
+	var key := "lv_%d" % int(tr.x)
 	_arms(15.0, 15.0)
 	S.h.arms_free = false
-	await S.move(Vector2(250, 540) if S.h.s > 0.9 else Vector2(200, 550), dur)
+	await S.move(Vector2(tr.y, tr.z), dur)
+	_arms(150.0, 150.0)
+	S.sfx("chop", -4.0, 0.8)
+	S.float_text("バキッ", S.w2s(Vector2(tr.y, tr.z - 190)), Color("c8ffa0"), 52, 0.9)
+	S.burst(S.w2s(Vector2(tr.x, tr.z - 230)), Color("4a9f3a"), 10, 200.0)
+	S.v[key] = maxf(0.0, float(S.v.get(key, 1.0)) - 0.5)
+	await S.wait(0.5)
 	S.v.carry = true
 	_arms(125.0, 125.0)
-	await S.move(Vector2(650, 520) if S.h.s > 0.9 else Vector2(560, 535), dur)
+	await S.move(Vector2(650, 520), dur)
 	S.v.carry = false
 	S.sfx("whoosh", -4.0)
 	_arms(170.0, 170.0)

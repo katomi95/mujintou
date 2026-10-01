@@ -417,7 +417,7 @@ func _draw_world() -> void:
 		for pm in PALMS:
 			var q: Vector3 = pm
 			if not v.get("no_palm_%d" % int(q.x), false):
-				Art.palm(w, Vector2(q.x, q.y), q.z, -0.1 if q.x < 640.0 else 0.1, t)
+				Art.palm(w, Vector2(q.x, q.y), q.z, -0.1 if q.x < 640.0 else 0.1, t, float(v.get("lv_%d" % int(q.x), 1.0)))
 	if back_fn.is_valid():
 		back_fn.call(w)
 	if hero_visible:

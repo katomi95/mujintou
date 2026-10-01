@@ -4,7 +4,7 @@ $Eps = if ($args.Count) { $args | ForEach-Object { [int]$_ } } else { 0..9 }
 $gp = "C:\Users\katom\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64_console.exe"
 $root = Split-Path -Parent $PSScriptRoot
 $times = @{
-  0 = "2.5,6,12,18,24,29"; 1 = "3,7,12,18,24,31"; 2 = "4,9,14,20,27,33,40,47"; 3 = "3,6,10,18,22,60";
+  0 = "2.5,6,12,18,24,29"; 1 = "9,10.5,12.5,14,20,27,34"; 2 = "4,9,14,20,27,33,40,47"; 3 = "3,6,10,18,22,60";
   4 = "30,35,37,38.5"; 5 = "3,8,14,20,26,32"; 6 = "2,6,11,16,22,25,28,32"; 7 = "3,6,10,16,22,28,35";
   8 = "3,10,15,20,26,29.5,32"; 9 = "2,4,7,12,18,26,36,44,50"
 }
