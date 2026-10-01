@@ -189,11 +189,6 @@ func _build_ui() -> void:
 	title_label.position = Vector2(140, 22)
 	title_label.size = Vector2(1000, 260)
 	title_ui.add_child(title_label)
-	var sub := _label(32, Color("fff6c8"), 8)
-	sub.text = "― 何を渡しても、この人はまともに使わない ―"
-	sub.position = Vector2(140, 300)
-	sub.size = Vector2(1000, 50)
-	title_ui.add_child(sub)
 	var start := _button("はじめる", 54)
 	start.position = Vector2(470, 580)
 	start.size = Vector2(340, 90)

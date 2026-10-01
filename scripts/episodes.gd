@@ -312,7 +312,7 @@ func _fire_glow(c: CanvasItem) -> void:
 # ================================================================== 3. 釣り竿
 func ep_rod() -> void:
 	await _open()
-	S.v = {"fs": 0, "fu": 0.0, "kind": 0, "dip": 0.0, "dip_t": 0.0, "rip": 0.0}
+	S.v = {"fs": 0, "fu": 0.0, "kind": 0, "dip": 0.0, "dip_t": 0.0, "rip": 0.0, "sx": -999.0, "ssz": 1.0}
 	S.back_fn = _rod_back
 	S.front_fn = _rod_front
 	S.tick_fn = _rod_tick
@@ -324,10 +324,11 @@ func ep_rod() -> void:
 	S.h.expr = "joy"
 	await S.say("おっ、釣れた！", 1.1)
 	S.h.expr = "blank"
-	await S.say("……違う。", 1.0)
+	await S.say("違う。あいつじゃない。", 1.8)
 	await _release()
 	S.h.expr = "normal"
 	await S.wait(0.4)
+	await _shadow(4.5, 1.0, "……いたな。")
 	await _catch(1)
 	await S.say("こいつでもない。", 1.5)
 	await _release()
@@ -341,6 +342,7 @@ func ep_rod() -> void:
 	await _catch(0)
 	await S.say("これでもない。", 1.2)
 	await _release()
+	await _shadow(4.0, 1.4, "……近いな。")
 	await _growl()
 	await S.jump("一ヶ月後", func(): S.h.thin = 0.65; S.time_now("night"); S.h.sit = true; S.h.p = Vector2(520, 535))
 	S.h.expr = "hungry"
@@ -349,12 +351,31 @@ func ep_rod() -> void:
 	await _catch(2)
 	await S.say("違う。", 1.0)
 	await _release()
+	await _shadow(4.0, 1.8)
 	S.h.expr = "burn"
 	S.v.rip = 1.0
 	S.sfx("whoosh", -10.0, 0.6)
 	await S.wait(1.0)
 	await S.say("いつか必ず、あいつを釣る", 2.8)
 	await _end(1.2)
+
+
+func _shadow(dur: float, sz: float, line: String = "") -> void:
+	S.v.ssz = sz
+	S.v.sx = -400.0
+	S.h.look = Vector2(1.0, -0.4)
+	S.sfx("whoosh", -10.0, 0.5)
+	S.anim(S.v, "sx", 1700.0, dur)
+	S.h.expr = "shock"
+	await S.wait(1.2)
+	if line != "":
+		await S.say(line, 1.6)
+		S.clear_say()
+		await S.wait(maxf(0.0, dur - 2.8))
+	else:
+		await S.wait(dur - 1.2)
+	S.h.look = Vector2.ZERO
+	S.h.expr = "normal"
 
 
 func _catch(kind: int) -> void:
@@ -413,6 +434,13 @@ func _rod_tick(dt: float) -> void:
 
 
 func _rod_back(c: CanvasItem) -> void:
+	var sx: float = S.v.sx
+	if sx > -500.0 and sx < 1750.0:
+		var z: float = S.v.ssz
+		var sp := Vector2(sx, 392.0 + 8.0 * z)
+		Art.ellipse(c, sp, 190.0 * z, 30.0 * z, Color(0.04, 0.12, 0.25, 0.42), 28)
+		c.draw_colored_polygon(PackedVector2Array([sp + Vector2(-150, 0) * z, sp + Vector2(-260, -26) * z, sp + Vector2(-250, 26) * z]), Color(0.04, 0.12, 0.25, 0.42))
+		c.draw_colored_polygon(PackedVector2Array([sp + Vector2(10, -20) * z, sp + Vector2(40, -62) * z, sp + Vector2(78, -20) * z]), Color(0.1, 0.16, 0.26, 0.9))
 	var rip: float = S.v.rip
 	if rip > 0.01:
 		var ctr := Vector2(1030, 435)
@@ -457,6 +485,10 @@ func ep_tent() -> void:
 	S.fx_fn = _tent_fx
 	S.tick_fn = _tent_tick
 	S.h.p = Vector2(480, 525)
+	S.v.sign = true
+	S.sfx("pon")
+	S.h.expr = "smile"
+	await S.say("ここは……キャンプ場だな。", 2.2)
 	await S.say("テントか。まずは設営だな。", 1.9)
 	await _pitch(3.0)
 	S.h.expr = "smile"
@@ -482,11 +514,13 @@ func ep_tent() -> void:
 	await _sleep(0.7)
 	await _morning("キャンプ 730日目", false, 0.6)
 	S.h.expr = "smile"
+	await S.say("遭難？ ただのキャンプだが？", 2.4)
 	await S.say("ちょっと長めのキャンプだなあ", 2.6)
 	await _end(1.0)
 
 
 func _pitch(dur: float) -> void:
+	S.float_text("チェックイン", _head() + Vector2(60, 0), Color("fff08a"), 44, 1.4)
 	S.h.expr = "serious"
 	S.v.hammer = true
 	await S.anim(S.v, "tent", 1.0, dur)
@@ -524,12 +558,13 @@ func _morning(label: String, detailed: bool, hold: float) -> void:
 		S.v.wave = true
 		S.h.expr = "joy"
 		await S.say("おはようございまーす！", 2.0)
-		await S.wait(1.5)
+		await S.say("お隣のキャンパーさんかな。", 2.2)
 		S.v.wave = false
 		_arms(8.0, 8.0)
 
 
 func _fold(dur: float) -> void:
+	S.float_text("チェックアウト", _head() + Vector2(60, 0), Color("fff08a"), 44, 1.4)
 	await S.move(Vector2(520, 525), 0.4)
 	S.h.expr = "serious"
 	S.v.hammer = true
@@ -583,7 +618,7 @@ func _tent_fx(c: CanvasItem) -> void:
 # ================================================================== 5. スマートフォン
 func ep_phone() -> void:
 	await _open()
-	S.v = {"phone": true, "hill": false, "tower": 0.0, "auto_cam": false, "cam_t": 0.0, "build": false, "cd": 0.0, "top": false, "top_pop": 0.0}
+	S.v = {"phone": true, "hill": false, "tower": 0.0, "auto_cam": false, "cam_t": 0.0, "build": false, "cd": 0.0, "top": false, "top_pop": 0.0, "bar_on": false}
 	S.fx_fn = _phone_fx
 	S.back_fn = _phone_back
 	S.front_fn = _phone_front
@@ -639,6 +674,13 @@ func ep_phone() -> void:
 	S.sfx("beep")
 	await S.anim(S.v, "top_pop", 1.0, 0.35)
 	await S.wait(1.0)
+	S.v.bar_on = true
+	S.sfx("chime", -4.0)
+	S.h.expr = "shock"
+	await S.wait(0.6)
+	S.v.bar_on = false
+	S.sfx("beep")
+	await S.say("今、一瞬だけ一本立った！", 2.0)
 	S.h.expr = "smile"
 	await S.say("あと少しだな", 2.6)
 	await _end(0.8)
@@ -680,6 +722,10 @@ func _phone_fx(c: CanvasItem) -> void:
 	if pop > 0.01:
 		var sz := int(150.0 * (0.5 + 0.5 * pop))
 		Art.ctext(c, "圏外", Vector2(820, 300), sz, Color("e8f4ff"), 16, Color(0.1, 0.25, 0.45, 0.9), 700.0)
+		for i in 4:
+			var on: bool = S.v.bar_on and i == 0
+			var col := Color("5cff7a") if on else Color(1, 1, 1, 0.35)
+			c.draw_rect(Rect2(740.0 + i * 34.0, 400.0 - (i + 1) * 16.0, 24, (i + 1) * 16.0), col)
 
 
 func _phone_front(c: CanvasItem) -> void:
